@@ -1,0 +1,39 @@
+version: '2'
+
+services:
+
+  postgres_db:
+    container_name: PeterPark_DB
+    image: postgres
+    environment:   # Set up postgres database name and password
+      POSTGRES_PASSWORD: postgres 
+      POSTGRES_USER: postgres
+      POSTGRES_DB: peterPark
+    ports:    # Set up ports exposed for other containers to connect to
+      - 5433:5432
+    networks:
+      - app-tier
+    volumes:
+      - ./postgres:/docker-entrypoint-initdb.d
+
+
+  python_app:
+    container_name: PeterParkApp
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - 5001:5001
+    depends_on:
+      - PeterPark_DB
+    networks:
+      - app-tier
+    volumes:
+      - ./static:/app/static
+    command:
+      tail -f /dev/null
+
+
+networks:
+  app-tier:
+    driver: bridge
