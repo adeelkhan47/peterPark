@@ -1,10 +1,12 @@
+import re
+
 from flask import request
 from flask_restx import Resource
-import re
+
+from common.helper import error_message
 from common.helper import response_structure
 from model.plate import Plate
 from . import api, schema
-from common.helper import error_message
 
 
 @api.route("")
@@ -13,6 +15,15 @@ class PlateOperation(Resource):
     @api.marshal_list_with(schema.GetPlates)
     def get(self):
         args = request.args.copy()
+
+        if "plate:like" in args.keys() and "owner_name:like" in args.keys():
+            A, count = Plate.filtration({"plate:like": args["plate:like"]})
+            B, count = Plate.filtration({"owner_name:like": args["owner_name:like"]})
+            A = set(A)
+            B = set(B)
+            all_users = A.union(B)
+            return response_structure(list(all_users), len(all_users)), 200
+
         all_users, count = Plate.filtration(args)
         return response_structure(all_users, count), 200
 
@@ -27,8 +38,6 @@ class PlateOperation(Resource):
             return response_structure(plate), 201
         else:
             return error_message("Invalid Plate Number"), 422
-
-
 
 
 @api.route("/<int:id>")
