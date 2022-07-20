@@ -26,8 +26,8 @@ Plate = api.model(
     {
         "id": fields.Integer(),
         "plate": fields.String(allow_null=True),
-        "start_date": fields.DateTime(allow_null=True,dt_format='rfc822'),
-        "end_date": fields.DateTime(allow_null=True,dt_format='rfc822'),
+        "start_date": fields.DateTime(allow_null=True),
+        "end_date": fields.DateTime(allow_null=True),
         "owner_name": fields.String(allow_null=True),
     },
 )
